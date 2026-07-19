@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Link;
 use App\Repositories\Contracts\ClickRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class ClickService
@@ -18,12 +19,20 @@ class ClickService
 
     public function trackClick(Link $link, Request $request): void
     {
+        $ip = $request->ip();
+        if(Cache::has($ip)){
+            $countryCity=Cache::get($ip);
+        }
+        else{
+            $countryCity=$this->getCountryAndCity($ip);
+        }
+
         $data = [
-            'ip_address' => $request->ip(),
+            'ip_address' => $ip,
             'user_agent' => $request->userAgent(),
             'referer' => $request->header('referer'),
-            'country' => $this->getCountry($request->ip()),
-            'city' => $this->getCity($request->ip()),
+            'country' => $countryCity['country'] ?? null,
+            'city' => $countryCity['city'] ?? null,
             'clicked_at' => now(),
         ];
 
@@ -45,14 +54,21 @@ class ClickService
         return $this->repository->getDailyStats($link, $days);
     }
 
-    protected function getCountry(?string $ip): ?string
+    protected function getCountryAndCity(?string $ip): ?array
     {
-        //TODO прикрутить пакет для определения страны
-        return null;
-    }
+        $url = "https://ipinfo.io/{$ip}/json";
+        $response = file_get_contents($url);
+        $data = json_decode($response, true);
 
-    protected function getCity(?string $ip): ?string
-    {
+        if ($data && !$data['bogon']) {
+
+            Cache::add($ip,['country' => $data['country'],'city' => $data['city'],] , now()->addDay(1));
+
+            return [
+                'country' => $data['country'],
+                'city' => $data['city'],
+            ];
+        }
         return null;
     }
 }

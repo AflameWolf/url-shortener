@@ -56,7 +56,7 @@
                                 </div>
                             @endif
 
-                            {{-- Статистика в карточках --}}
+
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 <div class="bg-gray-50 rounded-lg p-4 text-center">
                                     <div class="text-2xl font-bold text-blue-600">{{ $link->clicks_count }}</div>
@@ -91,7 +91,7 @@
                                     </h3>
                                     <div class="bg-gray-50 rounded-lg overflow-hidden">
                                         <div class="max-h-60 overflow-y-auto">
-                                            <table class="min-w-full divide-y divide-gray-200">
+                                            <table class="w-full divide-gray-200">
                                                 <thead class="bg-gray-100 sticky top-0">
                                                 <tr>
                                                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -102,6 +102,12 @@
                                                     </th>
                                                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                         Дата и время
+                                                    </th>
+                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Страна
+                                                    </th>
+                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Город
                                                     </th>
                                                 </tr>
                                                 </thead>
@@ -117,14 +123,20 @@
                                                         <td class="px-4 py-2 text-sm text-gray-600 whitespace-nowrap">
                                                             {{ $click->clicked_at ? \Carbon\Carbon::parse($click->clicked_at)->format('d.m.Y H:i:s') : '—' }}
                                                         </td>
+                                                        <td class="px-4 py-2 text-sm text-gray-600 whitespace-nowrap">
+                                                            {{ $click->country}}
+                                                        </td>
+                                                        <td class="px-4 py-2 text-sm text-gray-600 whitespace-nowrap">
+                                                            {{ $click->city  }}
+                                                        </td>
                                                     </tr>
                                                 @endforeach
-                                                {{ $clicks->links() }}
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
                                 </div>
+                                {{ $clicks->links() }}
                             @else
                                 <div class="mt-6 text-center py-6 bg-gray-50 rounded-lg">
                                     <i class="fas fa-inbox text-gray-300 text-4xl mb-2"></i>
