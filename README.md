@@ -85,6 +85,10 @@ git clone (репозиторий)
 
 docker-compose up
 
+установка зависимостей:
+docker-compose run composer install
+docker-compose run node run build
+
 ## Тесты
 запуск:
 
